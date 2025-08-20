@@ -1,3 +1,4 @@
+#1
 numeros = [1, 2, 3, 4, 5]
 print(numeros)
 for n in numeros:
@@ -20,3 +21,21 @@ for n in numeros:
         break
 fin = time.time()
 print(¨Tiempo:¨, fin - inicio)
+
+#2 L
+import javax.swing.*;
+public class Dia2 {
+    public static void main(String[] args) {
+       int[] numeros = {5, 4, 8, 4, 2};
+       for (int i = 0;i < numeros.lenght - 1; i++) {
+           for (int j = 0; j < numeros.lenght - 1 - i; j++) {
+               if (numeros[j] > numeros[j + 1]) {
+                   int temp = numeros[j];
+                   numeros[j] = numeros[j + 1];
+                   numeros[j + 1] = temp;
+               }
+            }
+        }
+        JOptionPane.showMessageDialog(null, ¨Burbuja: ¨ + java.util.Arrays.toString(numeros));
+    }
+}
