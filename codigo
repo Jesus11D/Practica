@@ -1,37 +1,20 @@
-#1
-numeros = [1, 2, 3, 4, 5]
-print(numeros)
-for n in numeros:
-    if n == 3:
-        print(¨Encontrado:¨, n)
-izq, der = 0, len(numeros)-1
-while izq <= der;
-   mid = (izq + der) // 2
-   if numeros[mid] == 3:
-       print(¨Binaria:¨; numeros[mid])
-       break
-   elif numeros[mid] < 3:
-       izq = mid + 1
-   else:
-       der = mid - 1
-import time
-inicio = time.time()
-for n in numeros:
-    if n == 3
-        break
-fin = time.time()
-print(¨Tiempo:¨, fin - inicio)
-
-#2 L
 import javax.swing.*;
+
 public class Ordenacion {
     public static void main(String[] args) {
-        int[] numeros = {5, 3, 8, 4, 2};
+        int[] numeros = {5, 3, 8, 4, 2}; // arreglo base
+
         JOptionPane.showMessageDialog(null, "Arreglo original: " + arrayToString(numeros));
+
         int[] burbuja = numeros.clone();
         burbuja(burbuja);
         JOptionPane.showMessageDialog(null, "Burbuja: " + arrayToString(burbuja));
+
+        int[] seleccion = numeros.clone();
+        seleccion(seleccion);
+        JOptionPane.showMessageDialog(null, "Selección: " + arrayToString(seleccion));
     }
+
     public static void burbuja(int[] arr) {
         int n = arr.length;
         for (int i = 0; i < n - 1; i++) {
@@ -44,6 +27,22 @@ public class Ordenacion {
             }
         }
     }
+
+    public static void seleccion(int[] arr) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) {
+            int min = i;
+            for (int j = i + 1; j < n; j++) {
+                if (arr[j] < arr[min]) {
+                    min = j;
+                }
+            }
+            int temp = arr[min];
+            arr[min] = arr[i];
+            arr[i] = temp;
+        }
+    }
+
     public static String arrayToString(int[] arr) {
         StringBuilder sb = new StringBuilder();
         for (int n : arr) {
