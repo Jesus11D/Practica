@@ -24,18 +24,31 @@ print(¨Tiempo:¨, fin - inicio)
 
 #2 L
 import javax.swing.*;
-public class Dia2 {
+public class Ordenacion {
     public static void main(String[] args) {
-       int[] numeros = {5, 4, 8, 4, 2};
-       for (int i = 0;i < numeros.lenght - 1; i++) {
-           for (int j = 0; j < numeros.lenght - 1 - i; j++) {
-               if (numeros[j] > numeros[j + 1]) {
-                   int temp = numeros[j];
-                   numeros[j] = numeros[j + 1];
-                   numeros[j + 1] = temp;
-               }
+        int[] numeros = {5, 3, 8, 4, 2};
+        JOptionPane.showMessageDialog(null, "Arreglo original: " + arrayToString(numeros));
+        int[] burbuja = numeros.clone();
+        burbuja(burbuja);
+        JOptionPane.showMessageDialog(null, "Burbuja: " + arrayToString(burbuja));
+    }
+    public static void burbuja(int[] arr) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - 1 - i; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
             }
         }
-        JOptionPane.showMessageDialog(null, ¨Burbuja: ¨ + java.util.Arrays.toString(numeros));
+    }
+    public static String arrayToString(int[] arr) {
+        StringBuilder sb = new StringBuilder();
+        for (int n : arr) {
+            sb.append(n).append(" ");
+        }
+        return sb.toString();
     }
 }
