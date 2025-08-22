@@ -2,7 +2,7 @@ import javax.swing.*;
 
 public class Ordenacion {
     public static void main(String[] args) {
-        int[] numeros = {5, 3, 8, 4, 2}; // arreglo base
+        int[] numeros = {5, 3, 8, 4, 2};
 
         JOptionPane.showMessageDialog(null, "Arreglo original: " + arrayToString(numeros));
 
@@ -13,6 +13,10 @@ public class Ordenacion {
         int[] seleccion = numeros.clone();
         seleccion(seleccion);
         JOptionPane.showMessageDialog(null, "Selección: " + arrayToString(seleccion));
+
+        int[] insercion = numeros.clone();
+        insercion(insercion);
+        JOptionPane.showMessageDialog(null, "Inserción: " + arrayToString(insercion));
     }
 
     public static void burbuja(int[] arr) {
@@ -40,6 +44,19 @@ public class Ordenacion {
             int temp = arr[min];
             arr[min] = arr[i];
             arr[i] = temp;
+        }
+    }
+
+    public static void insercion(int[] arr) {
+        int n = arr.length;
+        for (int i = 1; i < n; i++) {
+            int key = arr[i];
+            int j = i - 1;
+            while (j >= 0 && arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j--;
+            }
+            arr[j + 1] = key;
         }
     }
 
