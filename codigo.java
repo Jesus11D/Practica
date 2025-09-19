@@ -1,107 +1,95 @@
-import java.io.*;
-import java.util.*;
+import java.awt.HeadlessException;
+import java.util.Arrays;
+import java.util.Random;
+import javax.swing.JOptionPane;
 
-public class ExternalSort {
-    
-    static final int MAX_MEMORIA = 1000;
+public class BusquedasInternas {
 
-    public static void main(String[] args) throws IOException {
-        String inputFile = "entrada.txt";
-        String outputFile = "salida_ordenada.txt";
-
-        List<String> tempFiles = dividirEnBloques(inputFile);
-
-        mezclarBloques(tempFiles, outputFile);
-
-        System.out.println("Ordenación externa completada. Resultado en: " + outputFile);
-    }
-
-    public static List<String> dividirEnBloques(String inputFile) throws IOException {
-        List<String> tempFiles = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        List<Integer> buffer = new ArrayList<>(MAX_MEMORIA);
-        String linea;
-        int count = 0;
-
-        while ((linea = reader.readLine()) != null) {
-            buffer.add(Integer.parseInt(linea.trim()));
-            if (buffer.size() == MAX_MEMORIA) {
-                Collections.sort(buffer);
-                String tempFileName = "temp_" + (count++) + ".txt";
-                escribirArchivo(tempFileName, buffer);
-                tempFiles.add(tempFileName);
-                buffer.clear();
+    public static int busquedaLineal(int[] arreglo, int valor) {
+        for (int i = 0; i < arreglo.length; i++) {
+            if (arreglo[i] == valor) {
+                return i;
             }
         }
-
-        if (!buffer.isEmpty()) {
-            Collections.sort(buffer);
-            String tempFileName = "temp_" + (count++) + ".txt";
-            escribirArchivo(tempFileName, buffer);
-            tempFiles.add(tempFileName);
-        }
-
-        reader.close();
-        return tempFiles;
+        return -1;
     }
 
-    public static void escribirArchivo(String filename, List<Integer> data) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
-        for (Integer num : data) {
-            writer.write(num.toString());
-            writer.newLine();
-        }
-        writer.close();
-    }
-
-    public static void mezclarBloques(List<String> tempFiles, String outputFile) throws IOException {
-        PriorityQueue<EntradaArchivo> pq = new PriorityQueue<>();
-        List<BufferedReader> readers = new ArrayList<>();
-
-        for (String file : tempFiles) {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            readers.add(br);
-            String linea = br.readLine();
-            if (linea != null) {
-                pq.add(new EntradaArchivo(Integer.parseInt(linea), br));
+    public static int busquedaBinaria(int[] arreglo, int valor) {
+        int inicio = 0;
+        int fin = arreglo.length - 1;
+        while (inicio <= fin) {
+            int medio = (inicio + fin) / 2;
+            if (arreglo[medio] == valor) {
+                return medio;
+            } else if (arreglo[medio] < valor) {
+                inicio = medio + 1;
+            } else {
+                fin = medio - 1;
             }
         }
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
-
-        while (!pq.isEmpty()) {
-            EntradaArchivo entrada = pq.poll();
-            writer.write(Integer.toString(entrada.valor));
-            writer.newLine();
-
-            String linea = entrada.reader.readLine();
-            if (linea != null) {
-                pq.add(new EntradaArchivo(Integer.parseInt(linea), entrada.reader));
-            }
-        }
-
-        writer.close();
-
-        for (BufferedReader br : readers) {
-            br.close();
-        }
-        for (String file : tempFiles) {
-            new File(file).delete();
-        }
+        return -1;
     }
-    static class EntradaArchivo implements Comparable<EntradaArchivo> {
-        int valor;
-        BufferedReader reader;
 
-        public EntradaArchivo(int valor, BufferedReader reader) {
-            this.valor = valor;
-            this.reader = reader;
+    public static String imprimirArreglo(int[] arreglo) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arreglo.length; i++) {
+            sb.append(arreglo[i]).append(" ");
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        Random random = new Random();
+        int[] arreglo = new int[20];
+        for (int i = 0; i < arreglo.length; i++) {
+            arreglo[i] = random.nextInt(100) + 1;
         }
 
-        @Override
-        public int compareTo(EntradaArchivo o) {
-            return Integer.compare(this.valor, o.valor);
+        JOptionPane.showMessageDialog(null, "Arreglo generado:\n" + imprimirArreglo(arreglo));
+        Arrays.sort(arreglo);
+        JOptionPane.showMessageDialog(null, "Arreglo ordenado:\n" + imprimirArreglo(arreglo));
+
+        int opcion = 0;
+        while (opcion != 3) {
+            String menu = """
+                          Seleccione un algoritmo de b\u00fasqueda:
+                          1. B\u00fasqueda Lineal
+                          2. B\u00fasqueda Binaria
+                          3. Salir""";
+            try {
+                opcion = Integer.parseInt(JOptionPane.showInputDialog(menu));
+            } catch (HeadlessException | NumberFormatException e) {
+                opcion = 3;
+            }
+
+            switch (opcion) {
+                case 1:
+                    {
+                        int valor = Integer.parseInt(JOptionPane.showInputDialog("Ingrese número a buscar:"));
+                        int indice = busquedaLineal(arreglo, valor);
+                        if (indice != -1) {
+                            JOptionPane.showMessageDialog(null, "Valor encontrado en posición: " + indice);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Valor no encontrado.");
+                        }       break;
+                    }
+                case 2:
+                    {
+                        int valor = Integer.parseInt(JOptionPane.showInputDialog("Ingrese número a buscar:"));
+                        int indice = busquedaBinaria(arreglo, valor);
+                        if (indice != -1) {
+                            JOptionPane.showMessageDialog(null, "Valor encontrado en posición: " + indice);
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Valor no encontrado.");
+                        }       break;
+                    }
+                case 3:
+                    JOptionPane.showMessageDialog(null, "Saliendo del programa...");
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Opción inválida.");
+                    break;
+            }
         }
     }
 }
-yui
