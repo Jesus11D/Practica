@@ -1,113 +1,170 @@
-import javax.swing.*;
-import java.io.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.Scanner;
 
-public class BusquedasExternas {
+public class DyV {
+
+    static class Metrics {
+        long swaps = 0;
+        long comparisons = 0;
+        long timeNs = 0;
+        Metrics() {}
+        @Override
+        public String toString() {
+            return "Comparisons: " + comparisons + ", Swaps: " + swaps + ", Time (ms): " + (timeNs / 1_000_000.0);
+        }
+    }
+
+    public static void shellSort(int[] a, Metrics m) {
+        int n = a.length;
+        int h = 1;
+        while (h < n / 3) h = 3 * h + 1;
+        long start = System.nanoTime();
+        while (h >= 1) {
+            for (int i = h; i < n; i++) {
+                int temp = a[i];
+                int j = i;
+                while (j >= h) {
+                    m.comparisons++;
+                    if (a[j - h] > temp) {
+                        a[j] = a[j - h];
+                        m.swaps++;
+                        j -= h;
+                    } else break;
+                }
+                a[j] = temp;
+            }
+            h = h / 3;
+        }
+        m.timeNs = System.nanoTime() - start;
+    }
+
+    public static void quickSort(int[] a, Metrics m) {
+        long start = System.nanoTime();
+        quickSortRec(a, 0, a.length - 1, m);
+        m.timeNs = System.nanoTime() - start;
+    }
+
+    private static void quickSortRec(int[] a, int lo, int hi, Metrics m) {
+        if (lo >= hi) return;
+        int p = partition(a, lo, hi, m);
+        quickSortRec(a, lo, p - 1, m);
+        quickSortRec(a, p + 1, hi, m);
+    }
+
+    private static int partition(int[] a, int lo, int hi, Metrics m) {
+        int mid = lo + (hi - lo) / 2;
+        int pivot = medianOfThree(a, lo, mid, hi, m);
+        int i = lo;
+        int j = hi;
+        while (i <= j) {
+            while (true) {
+                m.comparisons++;
+                if (a[i] < pivot) i++;
+                else break;
+            }
+            while (true) {
+                m.comparisons++;
+                if (a[j] > pivot) j--;
+                else break;
+            }
+            if (i <= j) {
+                swap(a, i, j, m);
+                i++;
+                j--;
+            }
+        }
+        return i - 1;
+    }
+
+    private static int medianOfThree(int[] a, int i, int j, int k, Metrics m) {
+        int x = a[i];
+        int y = a[j];
+        int z = a[k];
+        m.comparisons += 3;
+        if ((x <= y && y <= z) || (z <= y && y <= x)) return y;
+        if ((y <= x && x <= z) || (z <= x && x <= y)) return x;
+        return z;
+    }
+
+    private static void swap(int[] a, int i, int j, Metrics m) {
+        if (i == j) return;
+        int t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+        m.swaps++;
+    }
+
+    private static int[] generateRandom(int n, int maxVal, long seed) {
+        Random r = (seed == Long.MIN_VALUE) ? new Random() : new Random(seed);
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) a[i] = r.nextInt(maxVal) + 1;
+        return a;
+    }
+
+    private static int[] generateSorted(int n) {
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) a[i] = i + 1;
+        return a;
+    }
+
+    private static int[] generateReverse(int n) {
+        int[] a = new int[n];
+        for (int i = 0; i < n; i++) a[i] = n - i;
+        return a;
+    }
 
     public static void main(String[] args) {
-        try {
-            File archivo = new File("datos.txt");
-            if (!archivo.exists()) {
-                try (PrintWriter pw = new PrintWriter(new FileWriter(archivo))) {
-                    for (int i = 1; i <= 100; i++) {
-                        pw.println(i * 2);
-                    }
+        try (Scanner sc = new Scanner(System.in)) {
+            System.out.println("=== Ordenacion con ShellSort y QuickSort ===");
+            System.out.print("Tamano del arreglo: ");
+            int n = Integer.parseInt(sc.nextLine().trim());
+            System.out.print("Generar: 1) Aleatorio  2) Ordenado  3) Reverso  Elige: ");
+            int modo = Integer.parseInt(sc.nextLine().trim());
+            int[] original;
+            switch (modo) {
+                case 2 -> original = generateSorted(n);
+                case 3 -> original = generateReverse(n);
+                default -> {
+                    System.out.print("Semilla aleatoria: ");
+                    String s = sc.nextLine().trim();
+                    long seed = s.isEmpty() ? Long.MIN_VALUE : Long.parseLong(s);
+                    original = generateRandom(n, Math.max(100, n * 2), seed);
                 }
             }
 
-            List<Integer> datos = new ArrayList<>();
-            try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-                String linea;
-                while ((linea = br.readLine()) != null) {
-                    datos.add(Integer.parseInt(linea));
-                }
-            }
+            int[] a1 = Arrays.copyOf(original, original.length);
+            int[] a2 = Arrays.copyOf(original, original.length);
 
-            int[] arreglo = datos.stream().mapToInt(i -> i).toArray();
+            Metrics ms = new Metrics();
+            shellSort(a1, ms);
 
-            int clave = Integer.parseInt(
-                    JOptionPane.showInputDialog("Ingrese número a buscar")
-            );
+            Metrics mq = new Metrics();
+            quickSort(a2, mq);
 
-            StringBuilder resultado = new StringBuilder();
+            System.out.println();
+            System.out.println("Resultados:");
+            System.out.println("Shell Sort -> " + ms.toString());
+            System.out.println("Quick Sort -> " + mq.toString());
+            System.out.println();
 
-            int posBloques = busquedaSecuencialBloques(arreglo, clave, 10);
-            resultado.append("Búsqueda Secuencial por Bloques: ")
-                    .append(posBloques >= 0 ? "Encontrado en índice " + posBloques : "No encontrado")
-                    .append("\n");
+            boolean okShell = isSorted(a1);
+            boolean okQuick = isSorted(a2);
+            System.out.println("Verificacion ordenado: ShellSort: " + okShell + " | QuickSort: " + okQuick);
+            System.out.println();
 
-            int posIndices = busquedaSecuencialConIndices(arreglo, clave, 10);
-            resultado.append("Búsqueda Secuencial con Índices: ")
-                    .append(posIndices >= 0 ? "Encontrado en índice " + posIndices : "No encontrado")
-                    .append("\n");
-
-            int posHash = busquedaTransformacionClaves(arreglo, clave, arreglo.length * 2);
-            resultado.append("Búsqueda por Transformación de Claves: ")
-                    .append(posHash >= 0 ? "Encontrado en índice " + posHash : "No encontrado")
-                    .append("\n");
-
-            JOptionPane.showMessageDialog(null, resultado.toString());
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+            System.out.println("Complejidad teorica:");
+            System.out.println("ShellSort: mejor O(n log n), promedio entre O(n^(4/3)) y O(n log^2 n), peor variable.");
+            System.out.println("QuickSort: mejor O(n log n), promedio O(n log n), peor O(n^2).");
+            System.out.println();
+            System.out.println("Recomendaciones:");
+            System.out.println("- QuickSort suele ser mas rapido en promedio.");
+            System.out.println("- ShellSort mejora el ordenamiento por insercion.");
         }
     }
 
-    public static int busquedaSecuencialBloques(int[] arr, int clave, int tamBloque) {
-        int n = arr.length;
-        int inicio = 0;
-        while (inicio < n) {
-            int fin = Math.min(inicio + tamBloque, n);
-            if (arr[fin - 1] >= clave) {
-                for (int i = inicio; i < fin; i++) {
-                    if (arr[i] == clave) return i;
-                }
-                return -1;
-            }
-            inicio += tamBloque;
-        }
-        return -1;
-    }
-
-    public static int busquedaSecuencialConIndices(int[] arr, int clave, int salto) {
-        int n = arr.length;
-        int[] indices = new int[(n + salto - 1) / salto];
-        for (int i = 0; i < indices.length; i++) indices[i] = i * salto;
-
-        int bloque = -1;
-        for (int indice : indices) {
-            if (arr[indice] <= clave) bloque = indice;
-            else break;
-        }
-        if (bloque == -1) return -1;
-
-        int fin = Math.min(bloque + salto, n);
-        for (int i = bloque; i < fin; i++) {
-            if (arr[i] == clave) return i;
-        }
-        return -1;
-    }
-
-    public static int busquedaTransformacionClaves(int[] arr, int clave, int m) {
-        int n = arr.length;
-        int[] tabla = new int[m];
-        Arrays.fill(tabla, -1);
-
-        for (int i = 0; i < n; i++) {
-            int pos = arr[i] % m;
-            while (tabla[pos] != -1) {
-                pos = (pos + 1) % m;
-            }
-            tabla[pos] = i;
-        }
-
-        int pos = clave % m;
-        int intentos = 0;
-        while (tabla[pos] != -1 && intentos < m) {
-            if (arr[tabla[pos]] == clave) return tabla[pos];
-            pos = (pos + 1) % m;
-            intentos++;
-        }
-        return -1;
+    private static boolean isSorted(int[] a) {
+        for (int i = 1; i < a.length; i++) if (a[i - 1] > a[i]) return false;
+        return true;
     }
 }
