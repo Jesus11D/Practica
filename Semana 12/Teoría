@@ -1,1 +1,5 @@
-
+Búsqueda lineal: Algoritmo de búsqueda que revisa cada elemento de una lista hasta encontrar el valor buscado. [O(n)]
+Búsqueda binaria: Algoritmo de búsqueda que requiere que los datos estén ordenados, compara el valor buscado con el elemento del medio y descarta el arreglo en cada paso. [O(log n)]
+QuickSort: Algoritmo de ordenamiento basado en divide y vencerás, selecciona un pivote, divide los datos en dos grupos (menores y mayores al pivote) y ordena. [O(n log n)] ; [O(n²)]
+ShellSort: Algoritmo de ordenamiento que mejora el ordenamiento por inserción, comparando elementos que están a cierta distancia y reduciendo esa distancia en cada paso. [O(n log² n)]
+Recursividad: Técnica en la que una función se llama a sí misma para resolver un subproblema más pequeño.
