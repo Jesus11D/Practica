@@ -1,1 +1,35 @@
+Recursividad:
+Es una técnica en la que una función se llama a sí misma para resolver un problema más pequeño hasta llegar a un caso base que detiene las llamadas.
+Permite dividir un problema complejo en partes simples.
 
+Recursividad directa:
+Ocurre cuando una función se llama a sí misma directamente dentro de su propio código.
+
+Recursividad indirecta:
+Se da cuando una función llama a otra, y esa otra vuelve a llamar a la primera, formando un ciclo.
+
+Caso base:
+Es la condición que detiene la recursividad, evitando un ciclo infinito de llamadas.
+
+Factorial recursivo e iterativo:
+Recursivo: usa llamadas a sí mismo (más elegante y conceptual).
+Iterativo: usa bucles for o while (más eficiente en memoria).
+Ambos resuelven el mismo problema, pero con diferente enfoque.
+
+Backtracking:
+Es una técnica basada en recursividad que explora posibles soluciones a un problema y retrocede (“backtrack”) si una opción no lleva a la solución.
+
+Permutaciones (backtracking):
+Genera todas las combinaciones posibles de un conjunto de números sin repetirlos.
+Cada paso elige un elemento, lo marca como usado, y continúa hasta que todos estén colocados.
+
+Búsqueda lineal:
+Revisa uno por uno los elementos de un arreglo hasta encontrar el valor o llegar al final.
+Mejor caso: O(1)
+Peor caso: O(n)
+
+Búsqueda binaria:
+Funciona solo en arreglos ordenados.
+Compara el valor con el elemento del medio y descarta la mitad en cada paso.
+Mejor caso: O(1)
+Promedio y peor caso: O(log n)
