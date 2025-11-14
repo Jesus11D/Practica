@@ -1,1 +1,29 @@
+1. Recursividad
 
+Técnica donde una función se llama a sí misma para resolver un problema más pequeño.
+Es útil para dividir problemas complejos en pasos simples.
+Ejemplo en el código: factorial recursivo, laberinto, permutaciones.
+
+2. Caso base
+
+Es la condición que detiene la recursión.
+Evita loops infinitos y errores de pila.
+Ejemplo: detener factorial cuando n <= 1.
+
+3. Backtracking
+
+Método que prueba opciones y retrocede cuando una decisión no sirve.
+Permite explorar todas las soluciones posibles.
+Ejemplos en el código: laberinto, permutaciones, subset sum.
+
+4. Permutaciones (Backtracking)
+
+Genera todas las formas de ordenar un conjunto.
+Cada paso toma un valor, lo marca como usado, continúa y luego retrocede.
+
+5. Búsquedas (Lineal y Binaria)
+
+Lineal: revisa un elemento por uno → O(n).
+
+Binaria: divide el arreglo ordenado en mitades → O(log n).
+Sirve para comparar eficiencia entre métodos de búsqueda.
